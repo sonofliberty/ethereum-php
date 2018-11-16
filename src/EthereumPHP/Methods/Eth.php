@@ -20,6 +20,8 @@ class Eth extends AbstractMethods
             $this->client->request(67, 'eth_protocolVersion', [])
         );
 
+        $this->response = $response;
+
         return hexdec($response->getRpcResult());
     }
 
@@ -28,6 +30,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_syncing', [])
         );
+
+        $this->response = $response;
 
         $result = $response->getRpcResult();
         if ($result === false) {
@@ -43,6 +47,8 @@ class Eth extends AbstractMethods
             $this->client->request(64, 'eth_coinbase', [])
         );
 
+        $this->response = $response;
+
         return ($response->getRpcResult()) ? new Address($response->getRpcResult()) : null;
     }
 
@@ -51,6 +57,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(71, 'eth_mining', [])
         );
+
+        $this->response = $response;
 
         return (bool)$response->getRpcResult();
 
@@ -62,6 +70,8 @@ class Eth extends AbstractMethods
             $this->client->request(71, 'eth_hashrate', [])
         );
 
+        $this->response = $response;
+
         return hexdec($response->getRpcResult());
     }
 
@@ -70,6 +80,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(73, 'eth_gasPrice', [])
         );
+
+        $this->response = $response;
 
         return new Wei(hexdec($response->getRpcResult()));
     }
@@ -82,6 +94,9 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_accounts', [])
         );
+
+        $this->response = $response;
+
         $addresses = [];
         foreach ($response->getRpcResult() as $address) {
             $addresses[] = new Address($address);
@@ -97,6 +112,8 @@ class Eth extends AbstractMethods
             $this->client->request(83, 'eth_blockNumber', [])
         );
 
+        $this->response = $response;
+
         return hexdec($response->getRpcResult());
     }
 
@@ -105,6 +122,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_getBalance', [$address->toString(), $blockNumber->toString()])
         );
+
+        $this->response = $response;
 
         return new Wei(hexdec($response->getRpcResult()));
 
@@ -116,6 +135,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_getStorageAt', [$address->toString(), $quantity, $blockNumber->toString()])
         );
 
+        $this->response = $response;
+
         return $response->getRpcResult();
     }
 
@@ -125,6 +146,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_blockNumber', [$address->toString(), $blockNumber->toString()])
         );
 
+        $this->response = $response;
+
         return hexdec($response->getRpcResult());
     }
 
@@ -133,6 +156,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_getBlockTransactionCountByHash', [$hash->toString()])
         );
+
+        $this->response = $response;
 
         return hexdec($response->getRpcResult());
 
@@ -144,6 +169,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_getBlockTransactionCountByNumber', [$blockNumber->toString()])
         );
 
+        $this->response = $response;
+
         return hexdec($response->getRpcResult());
 
     }
@@ -153,6 +180,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_getUncleCountByBlockHash', [$hash->toString()])
         );
+
+        $this->response = $response;
 
         return hexdec($response->getRpcResult());
 
@@ -164,6 +193,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_getUncleCountByBlockNumber', [$blockNumber->toString()])
         );
 
+        $this->response = $response;
+
         return hexdec($response->getRpcResult());
 
     }
@@ -173,6 +204,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_getCode', [$address->toString(), $blockNumber->toString()])
         );
+
+        $this->response = $response;
 
         return $response->getRpcResult();
     }
@@ -184,6 +217,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_sign', [$address->toString(), $msgToSign])
         );
 
+        $this->response = $response;
+
         return $response->getRpcResult();
     }
 
@@ -193,8 +228,13 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_sendTransaction', [$transaction->toArray()])
         );
 
-        return new TransactionHash($response->getRpcResult());
+        $this->response = $response;
 
+        if ($response->getRpcResult()) {
+            return new TransactionHash($response->getRpcResult());
+        }
+
+        return null;
     }
 
     public function sendRawTransaction(string $data): TransactionHash
@@ -202,6 +242,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_sendRawTransaction', [$data])
         );
+
+        $this->response = $response;
 
         return $response->getRpcResult();
 
@@ -213,6 +255,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_call', [$transaction->toArray(), $blockNumber->toString()])
         );
 
+        $this->response = $response;
+
         return $response->getRpcResult();
     }
 
@@ -221,6 +265,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_estimateGas', [$transaction->toArray(), $blockNumber->toString()])
         );
+
+        $this->response = $response;
 
         return hexdec($response->getRpcResult());
 
@@ -232,6 +278,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_getBlockByHash', [$hash->toString(), $expandTransactions])
         );
 
+        $this->response = $response;
+
         return ($response->getRpcResult()) ? new Block($response->getRpcResult()) : null;
 
     }
@@ -241,6 +289,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_getBlockByNumber', [$blockNumber->toString(), $expandTransactions])
         );
+
+        $this->response = $response;
 
         return ($response->getRpcResult()) ? new Block($response->getRpcResult()) : null;
 
@@ -252,6 +302,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_getTransactionByHash', [$hash->toString()])
         );
 
+        $this->response = $response;
+
         return ($response->getRpcResult()) ? new TransactionInfo($response->getRpcResult()) : null;
     }
 
@@ -260,6 +312,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_getTransactionByBlockHashAndIndex', [$hash->toString(), '0x'.dechex($index)])
         );
+
+        $this->response = $response;
 
         return ($response->getRpcResult()) ? new TransactionInfo($response->getRpcResult()) : null;
     }
@@ -271,6 +325,8 @@ class Eth extends AbstractMethods
                 [$blockNumber->toString(), '0x'.dechex($index)])
         );
 
+        $this->response = $response;
+
         return ($response->getRpcResult()) ? new TransactionInfo($response->getRpcResult()) : null;
 
     }
@@ -280,6 +336,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_getTransactionReceipt', [$hash->toString()])
         );
+
+        $this->response = $response;
 
         return ($response->getRpcResult()) ? new TransactionReceipt($response->getRpcResult()) : null;
 
@@ -291,6 +349,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_getUncleByBlockHashAndIndex', [$hash->toString(), $index])
         );
 
+        $this->response = $response;
+
         return ($response->getRpcResult()) ? new Block($response->getRpcResult()) : null;
 
     }
@@ -300,6 +360,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_getUncleByBlockNumberAndIndex', [$blockNumber->toString(), $index])
         );
+
+        $this->response = $response;
 
         return ($response->getRpcResult()) ? new Block($response->getRpcResult()) : null;
 
@@ -311,6 +373,8 @@ class Eth extends AbstractMethods
             $this->client->request(1, 'eth_getCompilers', [])
         );
 
+        $this->response = $response;
+
         return ($response->getRpcResult()) ? $response->getRpcResult() : [];
 
     }
@@ -320,6 +384,8 @@ class Eth extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(1, 'eth_compileSolidity', [$code])
         );
+
+        $this->response = $response;
 
         return ($response->getRpcResult()) ? $response->getRpcResult() : [];
     }

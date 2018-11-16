@@ -18,6 +18,8 @@ class Personal extends AbstractMethods
             $this->client->request(67, 'personal_listAccounts', [])
         );
 
+        $this->response = $response;
+
         if (!$response->getRpcResult()) {
             return $addresses;
         }
@@ -34,6 +36,8 @@ class Personal extends AbstractMethods
             $this->client->request(67, 'personal_newAccount', [$password])
         );
 
+        $this->response = $response;
+
         return new Address($response->getRpcResult());
     }
 
@@ -42,17 +46,25 @@ class Personal extends AbstractMethods
         $response = $this->client->send(
             $this->client->request(67, 'personal_unlockAccount', [$address->toString(), $password, $duration])
         );
+
+        $this->response = $response;
+
         $result = $response->getRpcResult();
         return empty($result) ? false : true;
     }
 
-    public function sendTransaction(Transaction $transaction, string $password): TransactionHash
+    public function sendTransaction(Transaction $transaction, string $password): ?TransactionHash
     {
         $response = $this->client->send(
             $this->client->request(1, 'personal_sendTransaction', [$transaction->toArray(), $password])
         );
 
-        return new TransactionHash($response->getRpcResult());
+        $this->response = $response;
 
+        if ($response->getRpcResult()) {
+            return new TransactionHash($response->getRpcResult());
+        }
+
+        return null;
     }
 }
