@@ -125,8 +125,7 @@ class Eth extends AbstractMethods
 
         $this->response = $response;
 
-        return new Wei(hexdec($response->getRpcResult()));
-
+        return new Wei(\Phlib\base_convert($response->getRpcResult(), 16, 10));
     }
 
     public function getStorageAt(Address $address, int $quantity, BlockNumber $blockNumber): string
